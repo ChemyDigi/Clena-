@@ -31,8 +31,15 @@ export default function MessageForm({
   };
 
   useEffect(() => {
-    fetchMessages();
+    fetchMessages(); // initial load
+
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 2000); // ⏱ every 2 seconds
+
+    return () => clearInterval(interval);
   }, []);
+
 
   const handleSend = async () => {
     const payload = { email, message };
