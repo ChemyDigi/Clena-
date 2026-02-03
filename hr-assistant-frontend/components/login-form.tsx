@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const HARDCODED_USER = {
-  email: "hr@company.com",
+  email: "test@alchemy.lk",
   password: "123456",
 };
 
