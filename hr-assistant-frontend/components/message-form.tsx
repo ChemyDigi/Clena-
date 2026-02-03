@@ -6,8 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { saveMessage } from "@/lib/message-storage";
 
 type HRMessage = {
-  email: string;
   message: string;
+  email?: string;
 };
 
 export default function MessageForm({
@@ -20,26 +20,22 @@ export default function MessageForm({
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<HRMessage[]>([]);
 
-  // 🔹 GET messages from backend
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/messages");
       const data = await res.json();
       setMessages(data);
-    } catch (err) {
+    } catch {
       console.error("Failed to fetch messages");
     }
   };
 
-  // Load messages on mount
   useEffect(() => {
     fetchMessages();
   }, []);
 
   const handleSend = async () => {
     const payload = { email, message };
-
-    // keep localStorage logic (unchanged)
     saveMessage(payload);
     setMessage("");
 
@@ -57,7 +53,6 @@ export default function MessageForm({
         return;
       }
 
-      // 🔹 Re-fetch messages after POST
       fetchMessages();
     } catch {
       alert("Network error");
@@ -93,18 +88,31 @@ export default function MessageForm({
             </div>
           )}
 
-          {messages.map((msg, index) => (
-            <div key={index} className="flex justify-end w-full">
-              <div className="relative max-w-[35%] rounded-2xl bg-white px-6 py-4 text-sm shadow-md border">
-                <p className="text-gray-800 leading-relaxed">
-                  {msg.message}
-                </p>
-                <span className="absolute -bottom-4 right-3 text-[10px] text-gray-400">
-                  You
-                </span>
+          {messages.map((msg, index) => {
+            const isUser = !!msg.email;
+
+            return (
+              <div
+                key={index}
+                className={`flex w-full ${
+                  isUser ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div className="relative max-w-[35%] rounded-2xl bg-white px-6 py-4 text-sm shadow-md border">
+                  <p className="text-gray-800 leading-relaxed">
+                    {msg.message}
+                  </p>
+                  <span
+                    className={`absolute -bottom-4 ${
+                      isUser ? "right-3" : "left-3"
+                    } text-[10px] text-gray-400`}
+                  >
+                    {isUser ? "You" : "HR"}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
