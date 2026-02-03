@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { messages } from "../store";
+import { messages } from "../../store";
 
 export async function POST(req: Request) {
   let body;
