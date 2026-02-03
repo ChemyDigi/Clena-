@@ -20,18 +20,27 @@ export default function MessageForm({
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<HRMessage[]>([]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("hr_messages");
-    if (stored) {
-      setMessages(JSON.parse(stored));
+  // 🔹 GET messages from backend
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch("/api/messages");
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error("Failed to fetch messages");
     }
+  };
+
+  // Load messages on mount
+  useEffect(() => {
+    fetchMessages();
   }, []);
 
   const handleSend = async () => {
     const payload = { email, message };
 
+    // keep localStorage logic (unchanged)
     saveMessage(payload);
-    setMessages((prev) => [...prev, payload]);
     setMessage("");
 
     try {
@@ -45,7 +54,11 @@ export default function MessageForm({
 
       if (!res.ok) {
         alert(data?.error || "Failed to send message");
+        return;
       }
+
+      // 🔹 Re-fetch messages after POST
+      fetchMessages();
     } catch {
       alert("Network error");
     }
@@ -64,7 +77,7 @@ export default function MessageForm({
           className="h-9 rounded-full px-5"
           onClick={() => {
             localStorage.clear();
-            onLogout(); // ✅ CORRECT LOGOUT
+            onLogout();
           }}
         >
           Logout

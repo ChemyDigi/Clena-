@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { messages, HRMessage } from "./store";
 
-const WEBHOOK_URL = "https://n8n.autoloom.work/webhook-test/5fd880db-e6ec-4654-9fdc-5550c45ad19a";
+const WEBHOOK_URL =
+  "https://n8n.autoloom.work/webhook-test/5fd880db-e6ec-4654-9fdc-5550c45ad19a";
+
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as HRMessage;
     const { email, message } = body;
 
     if (!email || !message) {
@@ -14,10 +17,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ 1. Log locally
-    console.log("Incoming HR message:", { email, message });
+    messages.push({ email, message });
+    console.log("✅ Message stored:", { email, message });
 
-    // ✅ 2. Send to webhook
     await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: {
@@ -29,16 +31,19 @@ export async function POST(req: Request) {
         message,
       }),
     });
-
-    // ✅ 3. Respond to frontend
     return NextResponse.json(
       { success: true },
       { status: 200 }
     );
   } catch (error) {
+    console.error("❌ POST error:", error);
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return NextResponse.json(messages);
 }
