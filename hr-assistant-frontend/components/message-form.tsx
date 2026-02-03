@@ -66,17 +66,23 @@ export default function MessageForm({
         <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-700">
           AF
         </div>
+          <Button
+            variant="destructive"
+            className="h-9 rounded-full px-5"
+            onClick={async () => {
+              try {
+                await fetch("/api/messages/clear", { method: "POST" });
+              } catch {
+                console.error("Failed to clear messages");
+              }
 
-        <Button
-          variant="destructive"
-          className="h-9 rounded-full px-5"
-          onClick={() => {
-            localStorage.clear();
-            onLogout();
-          }}
-        >
-          Logout
-        </Button>
+              localStorage.clear();
+              onLogout();
+            }}
+          >
+            Logout
+          </Button>
+
       </div>
 
       {/* Chat body */}
