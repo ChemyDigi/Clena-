@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { saveMessage } from "@/lib/message-storage";
+import { ArrowUp } from "lucide-react";
 
 type HRMessage = {
   message: string;
@@ -67,37 +69,48 @@ export default function MessageForm({
   };
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#f5f6f8]">
+    <div className="flex flex-col h-screen w-full bg-[#212121] text-gray-100 font-sans">
       {/* Top bar */}
-      <div className="h-[64px] w-full bg-white border-b flex items-center justify-end px-6 gap-3">
-        <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-700">
-          AF
-        </div>
-          <Button
-            variant="destructive"
-            className="h-9 rounded-full px-5"
-            onClick={async () => {
-              try {
-                await fetch("/api/messages/clear", { method: "POST" });
-              } catch {
-                console.error("Failed to clear messages");
-              }
-
-              localStorage.clear();
-              onLogout();
-            }}
-          >
-            Logout
-          </Button>
-
+      <div className="h-[64px] w-full bg-[#212121] flex items-center justify-between px-6 gap-3">
+         <div className="flex items-center">
+            <Image 
+              src="/AlchemyLogo.png" 
+              alt="Alchemy Logo" 
+              width={100} 
+              height={32} 
+              className="object-contain"
+              priority
+            />
+         </div>
+         <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium text-white">
+              AF
+            </div>
+              <Button
+                variant="ghost"
+                className="h-9 px-3 text-gray-300 hover:text-white hover:bg-gray-700"
+                onClick={async () => {
+                  try {
+                    await fetch("/api/messages/clear", { method: "POST" });
+                  } catch {
+                    console.error("Failed to clear messages");
+                  }
+    
+                  localStorage.clear();
+                  onLogout();
+                }}
+              >
+                Logout
+              </Button>
+         </div>
       </div>
 
       {/* Chat body */}
-      <div className="flex-1 overflow-y-auto px-6 py-8 w-full">
-        <div className="flex flex-col gap-6 w-full">
+      <div className="flex-1 overflow-y-auto px-6 py-8 w-full flex justify-center">
+        <div className="flex flex-col gap-6 w-full max-w-3xl">
           {messages.length === 0 && (
-            <div className="text-center text-sm text-muted-foreground mt-32">
-              👋 Ask your first question to HR
+            <div className="text-center text-2xl font-semibold text-white mt-32">
+              What can I help with?
             </div>
           )}
 
@@ -111,17 +124,14 @@ export default function MessageForm({
                   isUser ? "justify-end" : "justify-start"
                 }`}
               >
-                <div className="relative max-w-[35%] rounded-2xl bg-white px-6 py-4 text-sm shadow-md border">
-                  <p className="text-gray-800 leading-relaxed">
+                <div 
+                  className={`relative max-w-[80%] px-5 py-3 text-[15px] leading-7 ${
+                     isUser ? "bg-[#2F2F2F] rounded-[26px] text-white" : "text-gray-100"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">
                     {msg.message}
                   </p>
-                  <span
-                    className={`absolute -bottom-4 ${
-                      isUser ? "right-3" : "left-3"
-                    } text-[10px] text-gray-400`}
-                  >
-                    {isUser ? "You" : "HR"}
-                  </span>
                 </div>
               </div>
             );
@@ -130,14 +140,14 @@ export default function MessageForm({
       </div>
 
       {/* Input bar */}
-      <div className="border-t bg-white px-6 py-4">
-        <div className="flex items-end gap-4 w-full max-w-4xl mx-auto">
+      <div className="bg-[#212121] px-6 pb-6 pt-2">
+        <div className="w-full max-w-3xl mx-auto relative bg-[#2F2F2F] rounded-[26px]">
           <Textarea
-            placeholder="Type your question here..."
+            placeholder="Type your message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={1}
-            className="w-full resize-none rounded-2xl px-6 py-4 text-sm shadow-sm"
+            className="w-full resize-none border-0 bg-transparent px-5 py-4 text-white text-[16px] placeholder:text-gray-400 focus-visible:ring-0 min-h-[52px] max-h-[200px] overflow-y-auto pr-12"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -149,9 +159,14 @@ export default function MessageForm({
           <Button
             onClick={handleSend}
             disabled={!message.trim()}
-            className="rounded-2xl px-8 py-4 shadow-md"
+            size="icon"
+            className={`absolute right-2 bottom-2 h-8 w-8 rounded-full transition-colors ${
+              message.trim() 
+                ? "bg-white hover:bg-gray-200 text-black" 
+                : "bg-transparent text-gray-500 cursor-not-allowed"
+            }`}
           >
-            Send
+            <ArrowUp className="h-5 w-5" />
           </Button>
         </div>
       </div>
