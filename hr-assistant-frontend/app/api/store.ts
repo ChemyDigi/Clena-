@@ -1,6 +1,7 @@
 export type HRMessage = {
+  sessionId: string;
+  email?: string;
   message: string;
-  email?: string; // optional
 };
 
 export const messages: HRMessage[] = [];

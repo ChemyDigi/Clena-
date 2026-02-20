@@ -4,22 +4,26 @@ import { messages, HRMessage } from "../store";
 const WEBHOOK_URL =
   "https://atomator.autoloom.work/webhook/2ce4fb75-5d16-4834-98fc-294d516908fa";
 
-
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as HRMessage;
-    const { email, message } = body;
 
-    if (!email || !message) {
+    // 🔥 ADDED sessionId
+    const { sessionId, email, message } = body;
+
+    if (!sessionId || !email || !message) {
       return NextResponse.json(
-        { error: "email and message are required" },
+        { error: "sessionId, email and message are required" },
         { status: 400 }
       );
     }
 
-    messages.push({ email, message });
-    console.log("✅ Message stored:", { email, message });
+    // 🔥 store with sessionId
+    messages.push({ sessionId, email, message });
 
+    console.log("✅ Message stored:", { sessionId, email, message });
+
+    // 🔥 forward sessionId to webhook
     await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: {
@@ -27,10 +31,12 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         event: "hr_message_created",
+        sessionId, // 🔥 ADDED
         email,
         message,
       }),
     });
+
     return NextResponse.json(
       { success: true },
       { status: 200 }
@@ -44,6 +50,18 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
-  return NextResponse.json(messages);
+// 🔥 UPDATED GET to filter by session
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const sessionId = searchParams.get("sessionId");
+
+  if (!sessionId) {
+    return NextResponse.json([]);
+  }
+
+  const sessionMessages = messages.filter(
+    (msg) => msg.sessionId === sessionId
+  );
+
+  return NextResponse.json(sessionMessages);
 }

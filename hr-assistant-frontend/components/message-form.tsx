@@ -23,14 +23,21 @@ export default function MessageForm({
   const [messages, setMessages] = useState<HRMessage[]>([]);
 
   const fetchMessages = async () => {
-    try {
-      const res = await fetch("/api/messages");
-      const data = await res.json();
-      setMessages(data);
-    } catch {
-      console.error("Failed to fetch messages");
-    }
-  };
+  try {
+    const sessionId = localStorage.getItem("sessionId");
+
+    if (!sessionId) return;
+
+    const res = await fetch(
+      `/api/messages?sessionId=${sessionId}`
+    );
+
+    const data = await res.json();
+    setMessages(data);
+  } catch {
+    console.error("Failed to fetch messages");
+  }
+};
 
   useEffect(() => {
     fetchMessages(); // initial load
@@ -44,7 +51,8 @@ export default function MessageForm({
 
 
   const handleSend = async () => {
-    const payload = { email, message };
+    const sessionId = localStorage.getItem("sessionId");
+    const payload = { sessionId, email, message };
     saveMessage(payload);
     setMessage("");
 

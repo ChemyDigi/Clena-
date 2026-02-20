@@ -32,13 +32,17 @@ export function LoginForm({
     e.preventDefault();
 
     if (
-      email === HARDCODED_USER.email &&
-      password === HARDCODED_USER.password
-    ) {
-      onSuccess(email);
-    } else {
-      alert("Invalid email or password");
-    }
+  email === HARDCODED_USER.email &&
+  password === HARDCODED_USER.password
+) {
+  // 🔥 CREATE SESSION ID HERE
+  const sessionId = crypto.randomUUID();
+  localStorage.setItem("sessionId", sessionId);
+
+  onSuccess(email);
+} else {
+  alert("Invalid email or password");
+}
   };
 
   return (
