@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { messages, HRMessage } from "../store";
 
 const WEBHOOK_URL =
-  "https://atomator.autoloom.work/webhook/2ce4fb75-5d16-4834-98fc-294d516908fa";
+  "https://atomator.autoloom.work/webhook-test/2ce4fb75-5d16-4834-98fc-294d516908fa";
 
 
 export async function POST(req: Request) {
