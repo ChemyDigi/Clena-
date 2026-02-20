@@ -15,9 +15,11 @@ type HRMessage = {
 export default function MessageForm({
   email,
   onLogout,
+  onBack,
 }: {
   email: string;
   onLogout: () => void;
+  onBack: () => void;
 }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<HRMessage[]>([]);
@@ -80,37 +82,56 @@ export default function MessageForm({
     <div className="flex flex-col h-screen w-full bg-[#212121] text-gray-100 font-sans">
       {/* Top bar */}
       <div className="h-[64px] w-full bg-[#212121] flex items-center justify-between px-6 gap-3">
-         <div className="flex items-center">
-            <Image 
-              src="/AlchemyLogo.png" 
-              alt="Alchemy Logo" 
-              width={100} 
-              height={32} 
-              className="object-contain"
-              priority
-            />
-         </div>
-         <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium text-white">
-              AF
-            </div>
-              <Button
-                variant="ghost"
-                className="h-9 px-3 text-gray-300 hover:text-white hover:bg-gray-700"
-                onClick={async () => {
-                  try {
-                    await fetch("/api/messages/clear", { method: "POST" });
-                  } catch {
-                    console.error("Failed to clear messages");
-                  }
+         <div className="h-[64px] w-full bg-[#212121] flex items-center justify-between px-6 gap-3">
+  {/* Logo */}
+  <div className="flex items-center">
+    <Image 
+      src="/AlchemyLogo.png" 
+      alt="Alchemy Logo" 
+      width={100} 
+      height={32} 
+      className="object-contain"
+      priority
+    />
+  </div>
+
+  {/* Right Side */}
+  <div className="flex items-center gap-3">
     
-                  localStorage.clear();
-                  onLogout();
-                }}
-              >
-                Logout
-              </Button>
-         </div>
+    {/* Back to Home Button */}
+    <Button
+      variant="ghost"
+      className="h-9 px-3 text-gray-300 hover:text-white hover:bg-gray-700"
+      onClick={onBack}
+    >
+      Back to Home
+    </Button>
+
+    {/* Avatar */}
+    <div className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium text-white">
+      AF
+    </div>
+
+    {/* Logout Button */}
+    <Button
+      variant="ghost"
+      className="h-9 px-3 text-gray-300 hover:text-white hover:bg-gray-700"
+      onClick={async () => {
+        try {
+          await fetch("/api/messages/clear", { method: "POST" });
+        } catch {
+          console.error("Failed to clear messages");
+        }
+
+        localStorage.clear();
+        onLogout();
+      }}
+    >
+      Logout
+    </Button>
+  </div>
+</div>
+         
       </div>
 
       {/* Chat body */}
