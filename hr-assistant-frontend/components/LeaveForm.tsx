@@ -51,7 +51,7 @@ export default function LeaveForm({
 
       <div className="w-full max-w-md space-y-5 bg-[#2F2F2F] p-6 rounded-xl shadow-md">
 
-  {/* Name */}
+  
   <div className="space-y-2">
     <label className="text-sm font-medium text-gray-300">
       Full Name
