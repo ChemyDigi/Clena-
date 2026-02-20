@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json()) as HRMessage;
 
-    // 🔥 ADDED sessionId
+    
     const { sessionId, email, message } = body;
 
     if (!sessionId || !email || !message) {
@@ -18,7 +18,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🔥 store with sessionId
     messages.push({ sessionId, email, message });
 
     console.log("✅ Message stored:", { sessionId, email, message });
