@@ -13,16 +13,17 @@ export async function POST(req: Request) {
     );
   }
 
-  const { message } = body;
+  const { message, sessionId } = body;
 
-  if (!message) {
+  if (!message || !sessionId) {
     return NextResponse.json(
-      { error: "message is required" },
+      { error: "message and sessionId are required" },
       { status: 400 }
     );
   }
 
   messages.push({
+    sessionId,
     message,
   });
 
